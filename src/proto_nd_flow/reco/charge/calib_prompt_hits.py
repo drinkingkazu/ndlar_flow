@@ -151,6 +151,10 @@ class CalibHitBuilder(H5FlowStage):
             raw_hits_arr = raw_hits.data[rh_mask]
             mask = (packets_data['packet_type'] == 0) & mask
             n = np.count_nonzero(mask)
+            #print(cache)
+            #print(packet_frac_bt.data.shape)
+            #print(mask.shape)
+            #print(mask)
             packets_arr = packets_data.data[mask]
             packet_frac_bt_arr = packet_frac_bt.data[mask]
             packet_seg_bt_arr = packet_seg_bt.data[mask]
@@ -226,8 +230,11 @@ class CalibHitBuilder(H5FlowStage):
             if has_mc_truth:
                 back_track = np.full(shape=packets_arr.shape,fill_value=0.,dtype=self.hit_frac_dtype)
                 for hit_it, pack in np.ndenumerate(packets_arr):
-                    back_track[hit_it]['fraction'] = packet_frac_bt_arr[hit_it] 
-                    back_track[hit_it]['segment_id'] = packet_seg_bt_arr[hit_it]['segment_id']
+                    #print(back_track[hit_it]['fraction'].shape, packet_frac_bt_arr[hit_it].shape)
+                    #print(back_track[hit_it]['segment_id'].shape, packet_seg_bt_arr[hit_it].shape)
+                    length = len(packet_frac_bt_arr[hit_it])
+                    back_track[hit_it]['fraction'][:length] = packet_frac_bt_arr[hit_it] 
+                    back_track[hit_it]['segment_id'][:length] = packet_seg_bt_arr[hit_it]['segment_id']
 
         # if back tracking information was available, write the merged back tracking
         # dataset to file 
